@@ -277,4 +277,7 @@ mean(cociente.boot)
 pnorm(1.01, mean = mean(cociente.boot),sd = sd(cociente.boot)) -
      pnorm(0.99, mean = mean(cociente.boot),sd = sd(cociente.boot))
 
-#
+# Entonces,  la probabilidad de que los eventos resulten independientes, 
+# (que el cociente sea igual a uno) es solo de 3.46% por lo que podemos concluir
+# que en general que un equipo anote "x" cantidad de goles depende de los goles 
+# anotados por el equipo contrario.
