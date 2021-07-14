@@ -5,6 +5,8 @@ library(shinythemes)
 library(ggplot2)
 library(dplyr)
 
+Datos <- read.csv("https://raw.githubusercontent.com/beduExpert/Programacion-R-Santander-2021/main/Sesion-06/Postwork/match.data.csv", header =  T) 
+
 ui <- 
     
     fluidPage(
@@ -28,7 +30,7 @@ ui <-
                 
                 tabItems(
                     
-                    #Gráfico de Barras
+                    #GrÃ¡fico de Barras
                     tabItem(tabName = "graph",
                             fluidRow(
                                 titlePanel("Goles a Favor y en Contra Distribuidos por Equipos"), 
@@ -86,12 +88,12 @@ ui <-
     )
 )
 
-#De aquí en adelante es la parte que corresponde al server
+#De aquÃ­ en adelante es la parte que corresponde al server
 
 server <- function(input, output) {
     library(ggplot2)
     
-    #Gráfico de Barras
+    #GrÃ¡fico de Barras
      output$plot1 <- renderPlot({
         
        Datos <- read.csv("https://raw.githubusercontent.com/beduExpert/Programacion-R-Santander-2021/main/Sesion-06/Postwork/match.data.csv", header =  T) 
@@ -108,8 +110,8 @@ server <- function(input, output) {
     
     #Data Table
     output$data_table <- renderDataTable( {Datos}, 
-                                          options = list(aLengthMenu = c(5,25,50),
-                                                         iDisplayLength = 5)
+                                          options = list(aLengthMenu = c(25,50,75,100),
+                                                         iDisplayLength = 25)
     )
     
 }
