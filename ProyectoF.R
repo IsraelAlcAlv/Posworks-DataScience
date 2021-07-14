@@ -1,5 +1,12 @@
 # EQUIPO 1
 
+# Castillo Banca Antonio 
+# Contreras Ruiz Jose Ignacio 
+# González Vázquez del Mercado Emilio
+# González Siu Rosario
+# Alcocer Álvarez Israel
+
+
 dir()
 setwd()
 #PostWorks: Programación y Estadística con R - BEDU
@@ -10,6 +17,7 @@ library(dplyr)
 library(fbRanks)
 library(DescTools)
 
+install.packages("DescTools")
 
 ##################### Introducción a R y Software #############################
 
@@ -25,7 +33,7 @@ View(SP1)
 (head(SP1))
 
 
-# 2: Al importar nuestra BD se extraen las columnas que contienen los números de 
+# 2: Al importar nuestra BD se extraen las columnas que contienen los nÃºmeros de 
 # goles anotados por los equipos que jugaron en casa (FTHG) y los goles 
 # anotados por los equipos que jugaron como visitante (FTAG)
 
@@ -109,7 +117,7 @@ SP2<-mutate(SP2, Date=as.Date(Date,"%d/%m/%Y"))
 SP3<- mutate(SP3, Date=as.Date(Date,"%d/%m/%y")) 
 
 
-# Unión de los Data Frames
+# UniÃ³n de los Data Frames
 
 SP4<-rbind(SP3,SP2,SP1)
 
@@ -135,7 +143,7 @@ ldf <- rename(ldf,  FTHG=Var1)
 
 View(ldf)
 
-# Las Probabilidades Marginales x (para x= 0,1,2) serían:
+# Las Probabilidades Marginales x (para x= 0,1,2) serÃ­an:
 
 ProbL <- as.list(ldf[c(1:3),3])
 
@@ -170,12 +178,12 @@ df <- rename(df, Gloc = Var1, Gvis = Var2)
 
 View(df$probabilidad)
 
-# Las Probabilidades Conjuntas x,y (para x=0,1,2 ; y= 0,1,2) serían:
+# Las Probabilidades Conjuntas x,y (para x=0,1,2 ; y= 0,1,2) serÃ­an:
 
 prop.table(frecuencia) [c(1:3),c(1:3)]
 
 
-# 2: A continuacion, se presentan estas probabilidades en Graficos:
+# 2: A continuación, se presentan estas probabilidades en Gráficos:
 
 ### 2.1: Probabilidades marginales del número de goles que anota el equipo de casa.
 
@@ -230,7 +238,7 @@ df%>%
 ##### Distribuciones, Teorema Central del Limite y Contraste de Hipotesis #####
 
 
-# 1: Obtencion de una tabla de cocientes al dividir las probabilidades conjuntas 
+# 1: Obtención de una tabla de cocientes al dividir las probabilidades conjuntas 
 # por el producto de las probabilidades marginales correspondientes.
 
 cocientes <- (merge(df, visdf, by.x = "Gvis", by.y = "FTAG", all = TRUE))
@@ -245,7 +253,7 @@ cocientes <- (mutate(cocientes, cociente = conjunta/(margvis*margloc)))
 
 View(cocientes$cociente)
 
-# Cuya media y derviacion estandar resultan ser:
+# Cuya media y desviación estándar resultan ser:
 
 mean(cocientes$cociente)
 sd(cocientes$cociente)
@@ -288,7 +296,7 @@ pnorm(1.01, mean = mean(cociente.boot),sd = sd(cociente.boot)) -
 # anotados por el equipo contrario.
 
 
-#################   Regresi�n Lineal y Clasificaci�n   ######################
+#################   Regresión Lineal y Clasificación   ######################
 
 SP3<-select(SP3,Date, HomeTeam, FTHG, AwayTeam, FTAG)
 SP2<-select(SP2,Date, HomeTeam,  FTHG, AwayTeam, FTAG)
@@ -310,13 +318,18 @@ SmallData<-rbind(SP3,SP2,SP1)
 SmallData <- rename(SmallData, date = Date, home.team = HomeTeam, home.score = FTHG, 
                     away.team = AwayTeam, away.score = FTAG)
 
+#Creación del documento csv 
 write.csv(SmallData, "soccer.csv", row.names = F)
 
 #install.packages("fbRanks")
 
 listasoccer <- create.fbRanks.dataframes(scores.file = "soccer.csv")
+#listasoccer <- create.fbRanks.dataframes(scores.file = "https://raw.githubusercontent.com/IsraelAlcAlv/Posworks-DataScience/master/soccer.csv")
+
+
 str(listasoccer)
 
+# Obtenemos los goles y los equipos
 anotaciones <- listasoccer$scores
 equipos <- listasoccer$teams
 
@@ -325,31 +338,33 @@ str(equipos)
 
 rank.teams(scores = anotaciones,teams=equipos)
 
+# Pasamos a obtener las fechas unicas de nuestros datos
 ?unique
 fecha <- unique(anotaciones$date)
 str(fecha)
 fecha - sort(fecha)
 
+#APlicamos la función rank.teams, la nos ayudará a predecir los goles por equipos
 n <- length(fecha)
 ?rank.teams
 ranking <- rank.teams(scores = anotaciones,teams=equipos,max.date = fecha[n-1], 
            min.date = fecha[1])
 
-
+#Obtenemos las predicciones
 Predicciones <- predict(ranking, date=fecha[n])
 
 
 ########################  Series de Tiempo  ####################################
 #Postwork 6
 
-#Descargar data
+#Descarga de los datos
 soccer.data <- read.csv("https://raw.githubusercontent.com/beduExpert/Programacion-R-Santander-2021/main/Sesion-06/Postwork/match.data.csv")
 
 #Modificando formato fecha y agregando suma de goles
 soccer.data <- mutate(soccer.data, date = as.Date(date, "%Y-%m-%d"),
                       sumagoles = home.score + away.score, juegos = 1)
 
-#Agrupando por a�o y mes y formato de columnas
+#Agrupando por año y mes y formato de columnas
 monthAvgGoals <- soccer.data %>% group_by(Year(date), Month(date, fmt = "mm"))%>%
         summarise(mean = mean(sumagoles))
 names(monthAvgGoals) <- c("year","month", "avrgGoals")
@@ -357,7 +372,7 @@ names(monthAvgGoals) <- c("year","month", "avrgGoals")
 #Acotando datos de 2010 a 2019
 ts.dataset <- as.data.frame(monthAvgGoals[- c(97:101),])
 
-#Creando ts y graficando
+#Creando la serie de tiepo y graficamos la misma
 avgSumaGoles.ts <- ts(ts.dataset$avrgGoals, start = 2010, frequency = 10)
 
 plot(avgSumaGoles.ts, xaxt = "n", main= "Promedio de suma de goles mensual",
@@ -370,17 +385,20 @@ abline(h = mean(ts.dataset$avrgGoals), col = "red", lwd=2)
 
 ####################  Conexiones con BD's y Datos Externos  ####################
 
-#Conectandose a MongoDB
-#Recuerda configurar tu cluster segun tu IP
+#Nos conectamos a MongoDB
+#Recordando configurar el cluster según nuestra IP
 dmd <- mongo(
         collection = "match",
         db = "match_games",
-        url = "mongodb+srv://nachorz:contrase�a@cluster0.wmpq4.mongodb.net/test",
+        url = "mongodb+srv://nachorz:contraseña@cluster0.wmpq4.mongodb.net/test",
 )
-#Creando Query de los juegos de local el 20 de Dic del 2015 del real madrid
+
+#Creando 
+Query de los juegos de local el 20 de Dic del 2015 del real madrid
 localdata <- dmd$find(
         query = '{"home.team" : "Real Madrid", "date":"2015-12-20"}',
         limit = 1)
+
 #Creando Query de los juegos de visita el 20 de Dic del 2015 del real madrid
 visitdata <-  dmd$find(
         query = '{"away.team" : "Real Madrid", "date":"2015-12-20"}',
